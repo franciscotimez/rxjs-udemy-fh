@@ -1,4 +1,4 @@
-import { Observable, Observer } from "rxjs";
+import { Observable, Observer, Subject } from "rxjs";
 
 const observer: Observer<any> = {
   next: (value: any): void => console.log("[next]:", value),
@@ -6,35 +6,24 @@ const observer: Observer<any> = {
   complete: (): void => console.info("[complete]:")
 };
 
-
-// Crear un contador que emita cada segundo 1,2,3,4,5...
 const intervalo$ = new Observable<number>(subs => {
-  let count = 0;
-  const interval = setInterval(() => {
-    count++;
-    console.log("Intervalo", count);
-    subs.next(count);
-  }, 1000);
+  const intervalID = setInterval(() => {
+    subs.next(Math.random())
+  }, 5000)
 
-  setTimeout(() => {
-    subs.complete();
-  }, 2500);
+  return () => clearInterval(intervalID)
+})
 
-  // Funcion que se ejecuta en el unsubscribe
-  return () => {
-    clearInterval(interval);
-    console.log("Intervalo Destruido");
-  };
-});
+// const subs1 = intervalo$.subscribe(rnd => console.log("subs1", rnd))
+// const subs2 = intervalo$.subscribe(rnd => console.log("subs2", rnd))
 
-// const subscription1 = intervalo$.subscribe(num => console.log("Num: ", num));
-const subscription1 = intervalo$.subscribe(observer);
-const subscription2 = intervalo$.subscribe(observer);
-const subscription3 = intervalo$.subscribe(observer);
+// Subject
+// 1 - Casteo Multiple
+// 2 - Es un Observer
+// 3 - Next, Error y Complete
+// 
+const subject$ = new Subject()
+intervalo$.subscribe(subject$)
 
-subscription1.add(subscription2);
-
-setTimeout(() => {
-  subscription1.unsubscribe();
-  console.log("Timeout Finalizado");
-}, 3000);
+const subs1 = subject$.subscribe(rnd => console.log("subs1", rnd))
+const subs2 = subject$.subscribe(rnd => console.log("subs2", rnd))
