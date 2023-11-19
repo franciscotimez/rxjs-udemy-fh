@@ -10,6 +10,10 @@ body{
     background-color: #18202F;
 }
 
+::-webkit-scrollbar {
+    display: none;
+}
+
 h1 {
     font-weight: lighter;
 }
