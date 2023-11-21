@@ -1,5 +1,13 @@
-import { from } from 'rxjs';
-import { distinctUntilKeyChanged } from 'rxjs/operators';
+import { from, queueScheduler, scheduled } from 'rxjs';
+import { distinct } from 'rxjs/operators';
+
+const numeros$ = scheduled<number | string>([1, '1', 1, 3, 3, 2, 2, 4, 4, 5, 3, 1, '1'], queueScheduler);
+
+console.log("Antes");
+numeros$.pipe(
+  distinct() // === Elimina los distintos y elimina los repetidos ya emitidos
+).subscribe(console.log);
+console.log("Despues");
 
 interface Personaje {
   nombre: string;
@@ -33,6 +41,6 @@ const personajes: Personaje[] = [
 ];
 console.log("Antes");
 from(personajes).pipe(
-  distinctUntilKeyChanged("nombre")
+  distinct(p => p.nombre)
 ).subscribe(console.log);
 console.log("Despues");
