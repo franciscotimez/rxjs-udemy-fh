@@ -1,9 +1,9 @@
 import { fromEvent, Observable } from 'rxjs';
-import { debounceTime, map, mergeAll, mergeMap, switchMap } from 'rxjs/operators';
+import { debounceTime, map, mergeAll } from 'rxjs/operators';
 
 import { ajax } from 'rxjs/ajax';
-import { GithubUser } from './interfaces/github-user.interface';
-import { GithubUsersResp } from './interfaces/github-users.interface';
+import { GithubUser } from '../interfaces/github-user.interface';
+import { GithubUsersResp } from '../interfaces/github-users.interface';
 
 // Referencias
 const body = document.querySelector('body');
@@ -37,22 +37,12 @@ const mostrarUsuarios = (usuarios: GithubUser[]) => {
 // Streams
 const input$ = fromEvent<KeyboardEvent>(textInput, 'keyup');
 
-// mergeMap devuelve todos
 input$.pipe(
   debounceTime<KeyboardEvent>(500),
   map<KeyboardEvent, string>(event => (event.target['value'])),
-  mergeMap<string, Observable<GithubUsersResp>>(texto => ajax.getJSON<GithubUsersResp>(
+  map<string, Observable<GithubUsersResp>>(texto => ajax.getJSON<GithubUsersResp>(
     `https://api.github.com/search/users?q=${texto}`
   )),
-  // mergeAll<Observable<GithubUsersResp>>(),
+  mergeAll<Observable<GithubUsersResp>>(),
   map(resp => resp.items),
-);//.subscribe(mostrarUsuarios);
-
-
-// switchMap devuelve el ultimo
-const url = 'https://httpbin.org/delay/1?arg='; // + fernando
-
-input$.pipe(
-  map(event => event.target["value"]),
-  switchMap(texto => ajax.getJSON(url + texto))
-).subscribe(console.log);
+).subscribe(mostrarUsuarios);
