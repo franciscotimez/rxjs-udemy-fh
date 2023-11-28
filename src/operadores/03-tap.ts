@@ -3,6 +3,7 @@ import { tap, map } from 'rxjs/operators';
 
 const numeros$ = range(1, 5);
 
+// tap, Dispara un evento secundario que no afecta el flujo del pipe
 numeros$.pipe(
     tap(x => {
         console.log('antes', x);
