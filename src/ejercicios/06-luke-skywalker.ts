@@ -38,16 +38,18 @@ import { zip, of } from 'rxjs';
     personaje: {name: "Luke Skywalker", height: "172", mass: "77", hair_color: "blond", skin_color: "fair", …}
 */
 (() => {
-    // No tocar ========================================================
-    const SW_API = 'https://swapi.dev/api';
-    const getRequest = (url: string) => ajax.getJSON<any>(url);
-    // ==================================================================
+  // No tocar ========================================================
+  const SW_API = 'https://swapi.dev/api';
+  const getRequest = (url: string) => ajax.getJSON<any>(url);
+  // ==================================================================
 
-    // Realizar el llamado al URL para obtener a Luke Skywalker
-    getRequest(`Aquí va un URL`).pipe(
-        // Realizar los operadores respectivos aquí
-
-        // NO TOCAR el subscribe ni modificarlo ==
-    ).subscribe(console.log);           // ==
-    // =======================================
+  // Realizar el llamado al URL para obtener a Luke Skywalker
+  getRequest(`${SW_API}/people/2`).pipe(
+    // Realizar los operadores respectivos aquí
+    // switchMap( resp => getRequest(resp.species[0]))
+    switchMap(resp => zip(of(resp), getRequest(resp.species[0]))),
+    map(([personaje, especie]) => ({ personaje, especie }))
+    // NO TOCAR el subscribe ni modificarlo ==
+  ).subscribe(console.log);           // ==
+  // =======================================
 })();
